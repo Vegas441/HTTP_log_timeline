@@ -1,3 +1,13 @@
+class serverComm {
+    constructor(addr, name) {
+        this.address = addr;
+        this.name = name;
+    }
+    addMessage(msg) {
+        this.messages.push(msg);
+    }
+}
+
 /**
  * @brief Send a request to server 
  * @returns Response test from server  
@@ -16,7 +26,7 @@ function httpGet() {
 }
 
 /**
- * 
+ * Separates log into names of servers, adresses and messages 
  * @param {*} log 
  */
 function processResponse(log) {
@@ -25,24 +35,44 @@ function processResponse(log) {
     var logSection = document.getElementById("log-section");
     logSection.style.border = "1px solid grey"; // Add border
 
-    // TODO -> process log into correct variables
+    // Process log into correct variables
+    var lines = log.split('\n');
+    var connections; // Server connections by server adresses
+    for(var i = 0; i < log.length; i++) {
+        var line = lines[i];
+        // TODO -> split line and check existence of communication
+    }
 
     // Create new div
-    div = generateDiv(/*add params*/);
-    logSection.appendChild(div);
+    for (const commObject in connections) {
+        div = generateDiv(commObject);
+        logSection.appendChild(div);
+    }
+}
+
+/**
+ * Function checks if communication with server has already been defined
+ * @param {*} connections List of connections
+ * @param {*} addr Server address
+ * @returns True if connection is already declared
+ */
+function isCommDefined(connections, addr) {
+    for(const commObject in connections) {
+        if(commObject.address.localeCompare(addr) == 0) 
+            return true;
+    }
+    return false;
 }
 
 /**
  * 
- * @param {*} serverName 
- * @param {*} serverAddr 
- * @param {*} sent 
- * @param {*} recieved 
+ * @param {*} commObject Communication object
+ * @returns 
  */
-function generateDiv(serverName, serverAddr, sent, recieved) {
+function generateDiv(commObject) {
     console.log("generating div")
     
     div = document.createElement("div");
-    div.innerHTML = serverName + " -> " + serverAddr;
+    //div.innerHTML = ;
     return div;
 }

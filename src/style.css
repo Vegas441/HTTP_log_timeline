@@ -1,0 +1,27 @@
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+#Header {
+    background-color: gainsboro;
+    margin: 0px;
+    padding: 0px;
+}
+
+#Header h1 {
+    font-family: 'Courier New', Courier, monospace;
+    padding: 15px;
+}
+
+#generateButton {
+    margin: 50px;
+    padding: 10px;
+    background-color: steelblue;
+    font-family: 'Courier New', Courier, monospace;
+    color: white;
+    font-weight: bold;
+    border: 2px solid gray;
+    border-radius: 10%;
+    
+}
