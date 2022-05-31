@@ -2,6 +2,7 @@ class serverComm {
     constructor(addr, name) {
         this.address = addr;
         this.name = name;
+        this.messages = [];
     }
     addMessage(msg) {
         this.messages.push(msg);
@@ -20,7 +21,6 @@ function httpGet() {
 
     var rText;
     httpRequest.onreadystatechange = function () {
-        console.log(httpRequest.responseText);
         processResponse(httpRequest.responseText);
     }
 }
@@ -37,10 +37,36 @@ function processResponse(log) {
 
     // Process log into correct variables
     var lines = log.split('\n');
-    var connections; // Server connections by server adresses
+    var connections = []; // Server connections by server adresses
+    var lastConnection; // Last connection object, used for RECIEVED
     for(var i = 0; i < log.length; i++) {
-        var line = lines[i];
-        // TODO -> split line and check existence of communication
+        const line = lines[i].split(" ");
+
+        // Split line 
+        const method = line[9];
+        if(method.localeCompare("SENT:") == 0) {
+            var addr = line[16].split("://");
+            addr = addr[1].split("/");
+            addr = addr[0]; // Server address
+            var commObject = getComm(connections,addr);
+
+            // Message to new server 
+            if(commObject == null) {
+                var serverName = line[4];
+                let newComm = new serverComm(addr, serverName);
+                lastConnection = commObject;
+                // TODO add message 
+                var message = lines[i].substring(lines[i].search("SEND:"), lines[i].length);
+                newComm.addMessage(message);
+                connections.push(newComm);
+            }
+            
+        } else {
+            // TODO add message
+            var message = lines[i].substring(lines[i].search("RECIEVED:"), lines[i].length);
+            if(lastConnection != null)
+                lastConnection.addMessage(message);
+        }
     }
 
     // Create new div
@@ -54,14 +80,14 @@ function processResponse(log) {
  * Function checks if communication with server has already been defined
  * @param {*} connections List of connections
  * @param {*} addr Server address
- * @returns True if connection is already declared
+ * @returns Communication object or null
  */
-function isCommDefined(connections, addr) {
+function getComm(connections, addr) {
     for(const commObject in connections) {
         if(commObject.address.localeCompare(addr) == 0) 
-            return true;
+            return commObject;
     }
-    return false;
+    return null;
 }
 
 /**
@@ -70,9 +96,9 @@ function isCommDefined(connections, addr) {
  * @returns 
  */
 function generateDiv(commObject) {
-    console.log("generating div")
+    //console.log("generating div")
     
     div = document.createElement("div");
-    //div.innerHTML = ;
+    div.innerHTML = commObject.name + " -> " + commObject.addr;
     return div;
 }
