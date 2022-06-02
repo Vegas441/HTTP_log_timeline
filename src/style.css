@@ -11,11 +11,11 @@
 
 #Header h1 {
     font-family: 'Courier New', Courier, monospace;
-    padding: 15px;
+    padding: 20px;
 }
 
 #generateButton {
-    margin: 50px;
+    margin: 20px;
     padding: 10px;
     background-color: steelblue;
     font-family: 'Courier New', Courier, monospace;

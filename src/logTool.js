@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 class serverComm {
     constructor(addr, name) {
         this.address = addr;
@@ -34,60 +37,58 @@ function processResponse(log) {
     // Add style to log section 
     var logSection = document.getElementById("log-section");
     logSection.style.border = "1px solid grey"; // Add border
+    logSection.style.margin = "20px";
 
     // Process log into correct variables
     var lines = log.split('\n');
     var connections = []; // Server connections by server adresses
-    var lastConnection; // Last connection object, used for RECIEVED
-    for(var i = 0; i < log.length; i++) {
-        const line = lines[i].split(" ");
+    for(var i = 0; i < lines.length - 1; i++) {
+        let line = lines[i].split(" ");
 
         // Split line 
-        const method = line[9];
-        if(method.localeCompare("SENT:") == 0) {
+        const typeOfComm = line[9];
+        if(typeOfComm === "SENT:") {
             var addr = line[16].split("://");
             addr = addr[1].split("/");
             addr = addr[0]; // Server address
-            var commObject = getComm(connections,addr);
+
+            // Check if communication object exists
+            var commObject = null;   // TODO -> fix | UNDEFINED
+            for(const obj in connections) {
+                //console.log(obj.address);
+                if(addr === obj.address) {
+                    commObject = obj;
+                    break;
+                }
+            }
+            
 
             // Message to new server 
-            if(commObject == null) {
+            if(commObject == null) { 
                 var serverName = line[4];
                 let newComm = new serverComm(addr, serverName);
-                lastConnection = commObject;
-                // TODO add message 
                 var message = lines[i].substring(lines[i].search("SEND:"), lines[i].length);
                 newComm.addMessage(message);
                 connections.push(newComm);
+            } else {    // Add message to existing object
+                var message = lines[i].substring(lines[i].search("SEND:"), lines[i].length);
+                commObject.addMessage(message);
             }
-            
+
+
+        // RECIEVED
         } else {
-            // TODO add message
             var message = lines[i].substring(lines[i].search("RECIEVED:"), lines[i].length);
-            if(lastConnection != null)
-                lastConnection.addMessage(message);
+            if(connections.length != 0)
+                connections[connections.length - 1].addMessage(message);
         }
     }
 
     // Create new div
-    for (const commObject in connections) {
-        div = generateDiv(commObject);
+    connections.forEach(function (item){
+        let div = generateDiv(item);
         logSection.appendChild(div);
-    }
-}
-
-/**
- * Function checks if communication with server has already been defined
- * @param {*} connections List of connections
- * @param {*} addr Server address
- * @returns Communication object or null
- */
-function getComm(connections, addr) {
-    for(const commObject in connections) {
-        if(commObject.address.localeCompare(addr) == 0) 
-            return commObject;
-    }
-    return null;
+    });
 }
 
 /**
@@ -96,9 +97,7 @@ function getComm(connections, addr) {
  * @returns 
  */
 function generateDiv(commObject) {
-    //console.log("generating div")
-    
     div = document.createElement("div");
-    div.innerHTML = commObject.name + " -> " + commObject.addr;
+    div.innerHTML = commObject.name + " -> " + commObject.address;
     return div;
 }
