@@ -24,7 +24,17 @@ function httpGet() {
 
     var rText;
     httpRequest.onreadystatechange = function () {
-        processResponse(httpRequest.responseText);
+        if(httpRequest.readyState === XMLHttpRequest.DONE) {
+            var status = httpRequest.status;
+            if (status === 0 || (status >= 200 && status < 400)) {
+              // The request has been completed successfully
+              processResponse(httpRequest.responseText);
+            } else {
+              // Oh no! There has been an error with the request!
+              console.log("An error occured");
+            }
+          }
+
     }
 }
 
@@ -42,6 +52,7 @@ function processResponse(log) {
     var connections = new Array(); // Server connections by server adresses
     for(var i = 0; i < lines.length - 1; i++) {
         let line = lines[i].split(" ");
+        //console.log("iteration");
 
         // Split line 
         const typeOfComm = line[9];
@@ -53,8 +64,7 @@ function processResponse(log) {
             // Check if communication object exists
             var commObject;
 
-            /*
-            //console.log(connections.length);
+            
             for(var i = 0; i < connections.length - 1; i++) {      // TODO -> fix
                 var cObj = connections[i];
                 //console.log(cObj.address);
@@ -63,7 +73,8 @@ function processResponse(log) {
                     break;
                 }
             }
-            */
+            
+            
             
 
             // Message to new server 
