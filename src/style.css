@@ -7,6 +7,7 @@
     background-color: gainsboro;
     margin: 0px;
     padding: 0px;
+    border-bottom: 2px solid grey;
 }
 
 #Header h1 {
@@ -22,6 +23,22 @@
     color: white;
     font-weight: bold;
     border: 2px solid gray;
-    border-radius: 10%;
-    
+    border-radius: 15px;   
+}
+
+#deleteButton {
+    margin: 20px;
+    padding: 10px;
+    background-color: red;
+    font-family: 'Courier New', Courier, monospace;
+    color: white;
+    font-weight: bold;
+    border: 2px solid gray;
+    border-radius: 15px;   
+}
+
+#log-section {
+    border: 2px solid gray;
+    border-radius: 15px;
+    margin: 20px;
 }

@@ -1,5 +1,5 @@
 /**
- * 
+ * Server communication object 
  */
 class serverComm {
     constructor(addr, name) {
@@ -13,7 +13,7 @@ class serverComm {
 }
 
 /**
- * @brief Send a request to server 
+ * Send a request to server 
  * @returns Response test from server  
  */
 function httpGet() {
@@ -30,18 +30,16 @@ function httpGet() {
 
 /**
  * Separates log into names of servers, adresses and messages 
- * @param {*} log 
+ * @param {string} log 
  */
 function processResponse(log) {
     
     // Add style to log section 
     var logSection = document.getElementById("log-section");
-    logSection.style.border = "1px solid grey"; // Add border
-    logSection.style.margin = "20px";
 
     // Process log into correct variables
     var lines = log.split('\n');
-    var connections = []; // Server connections by server adresses
+    var connections = new Array(); // Server connections by server adresses
     for(var i = 0; i < lines.length - 1; i++) {
         let line = lines[i].split(" ");
 
@@ -53,14 +51,19 @@ function processResponse(log) {
             addr = addr[0]; // Server address
 
             // Check if communication object exists
-            var commObject = null;   // TODO -> fix | UNDEFINED
-            for(const obj in connections) {
-                //console.log(obj.address);
-                if(addr === obj.address) {
-                    commObject = obj;
+            var commObject;
+
+            /*
+            //console.log(connections.length);
+            for(var i = 0; i < connections.length - 1; i++) {      // TODO -> fix
+                var cObj = connections[i];
+                //console.log(cObj.address);
+                if(addr === cObj.address) {
+                    commObject = cObj;
                     break;
                 }
             }
+            */
             
 
             // Message to new server 
@@ -93,11 +96,27 @@ function processResponse(log) {
 
 /**
  * 
- * @param {*} commObject Communication object
+ * @param {serverComm} commObject Communication object
  * @returns 
  */
 function generateDiv(commObject) {
     div = document.createElement("div");
     div.innerHTML = commObject.name + " -> " + commObject.address;
+    div.style.margin = "10px";
+    div.style.padding = "5px";
+    div.style.border = "2px solid grey";
+    //div.style.borderradius = "5px";
     return div;
+}
+
+/**
+ * Deletes generated log
+ */
+function deleteLog() {
+    var logSection = document.getElementById("log-section");
+    var child = logSection.lastElementChild;
+    while(child) {
+        logSection.removeChild(child);
+        child = logSection.lastElementChild;
+    }
 }
