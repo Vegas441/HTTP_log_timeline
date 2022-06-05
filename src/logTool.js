@@ -47,6 +47,7 @@ function processResponse(log) {
     
     // Add style to log section 
     var logSection = document.getElementById("log-section");
+    logSection.innerHTML += "<h1>List</h1>";
 
     // Process log into correct variables
     var lines = log.split('\n');
@@ -95,7 +96,7 @@ function processResponse(log) {
 }
 
 /**
- * 
+ * Generates new div with communication session
  * @param {serverComm} commObject Communication object
  * @returns 
  */
@@ -110,7 +111,7 @@ function generateDiv(commObject) {
     div.onclick = 
         function() {
             div = document.getElementById("comm_" + commObject.address);
-            div.innerHTML = "";
+            div.innerHTML = "<h2>Detail</h2>";
             for(var i = 0; i < commObject.messages.length-1; i++) {
                 div.innerHTML += commObject.messages[i];
                 div.innerHTML += "<br>";
