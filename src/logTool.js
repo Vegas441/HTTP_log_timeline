@@ -29,6 +29,7 @@ function httpGet() {
             if (status === 0 || (status >= 200 && status < 400)) {
               // The request has been completed successfully
               processResponse(httpRequest.responseText);
+              return;
             } else {
               // Oh no! There has been an error with the request!
               console.log("An error occured");
@@ -52,7 +53,7 @@ function processResponse(log) {
     var connections = new Array(); // Server connections by server adresses
     for(var i = 0; i < lines.length - 1; i++) {
         let line = lines[i].split(" ");
-        //console.log("iteration");
+        var lastConnection;
 
         // Split line 
         const typeOfComm = line[9];
@@ -62,39 +63,27 @@ function processResponse(log) {
             addr = addr[0]; // Server address
 
             // Check if communication object exists
-            var commObject;
-
-            
-            for(var i = 0; i < connections.length - 1; i++) {      // TODO -> fix
-                var cObj = connections[i];
-                //console.log(cObj.address);
-                if(addr === cObj.address) {
-                    commObject = cObj;
-                    break;
-                }
-            }
-            
-            
-            
+            var commObject = connections.find(obj => { return obj.address === addr});    
 
             // Message to new server 
-            if(commObject == null) { 
+            if(typeof commObject == 'undefined') { 
                 var serverName = line[4];
                 let newComm = new serverComm(addr, serverName);
-                var message = lines[i].substring(lines[i].search("SEND:"), lines[i].length);
+                var message = lines[i].substring(lines[i].search("SENT:"), lines[i].length);
                 newComm.addMessage(message);
                 connections.push(newComm);
+                lastConnection = newComm;
             } else {    // Add message to existing object
-                var message = lines[i].substring(lines[i].search("SEND:"), lines[i].length);
+                var message = lines[i].substring(lines[i].search("SENT:"), lines[i].length);
                 commObject.addMessage(message);
+                lastConnection = commObject;
             }
-
 
         // RECIEVED
         } else {
-            var message = lines[i].substring(lines[i].search("RECIEVED:"), lines[i].length);
+            var message = lines[i].substring(lines[i].search("RECEIVED:"), lines[i].length);
             if(connections.length != 0)
-                connections[connections.length - 1].addMessage(message);
+                lastConnection.addMessage(message);
         }
     }
 
@@ -112,11 +101,21 @@ function processResponse(log) {
  */
 function generateDiv(commObject) {
     div = document.createElement("div");
+    div.id = "comm_" + commObject.address;
     div.innerHTML = commObject.name + " -> " + commObject.address;
     div.style.margin = "10px";
     div.style.padding = "5px";
     div.style.border = "2px solid grey";
-    //div.style.borderradius = "5px";
+    //div.addEventListener('click', generateSubdiv(commObject));
+    div.onclick = 
+        function() {
+            div = document.getElementById("comm_" + commObject.address);
+            div.innerHTML = "";
+            for(var i = 0; i < commObject.messages.length-1; i++) {
+                div.innerHTML += commObject.messages[i];
+                div.innerHTML += "<br>";
+            }
+        };
     return div;
 }
 
