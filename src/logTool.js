@@ -13,10 +13,20 @@ class serverComm {
 }
 
 /**
+ * Global variable indicating if log is already generated
+ */
+var logGenerated = false;
+
+/**
  * Send a request to server 
- * @returns Response test from server  
+ * @returns Response test from server
  */
 function httpGet() {
+
+    // If log is already generated, function will end
+    if(logGenerated) return;
+    else logGenerated = true;
+
     const url = "https://gist.githubusercontent.com/hajda14/8da0b313b0503b0faee7a8d7fe63d9ca/raw/2eb3eb138e8307af00c0c64f20c97e3c802d54a2/testlog";
     const httpRequest = new XMLHttpRequest();
     httpRequest.open("GET", url, true);
@@ -44,7 +54,7 @@ function httpGet() {
  * @param {string} log 
  */
 function processResponse(log) {
-    
+   
     // Add style to log section 
     var logSection = document.getElementById("log-section");
     logSection.innerHTML += "<h1>List</h1>";
@@ -107,7 +117,6 @@ function generateDiv(commObject) {
     div.style.margin = "10px";
     div.style.padding = "5px";
     div.style.border = "2px solid grey";
-    //div.addEventListener('click', generateSubdiv(commObject));
     div.onclick = 
         function() {
             div = document.getElementById("comm_" + commObject.address);
@@ -124,6 +133,7 @@ function generateDiv(commObject) {
  * Deletes generated log
  */
 function deleteLog() {
+    logGenerated = false;
     var logSection = document.getElementById("log-section");
     var child = logSection.lastElementChild;
     while(child) {
